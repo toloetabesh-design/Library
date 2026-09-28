@@ -1,55 +1,63 @@
-﻿using AutoMapper;
-using Library.Application.DTOs;
+﻿using Library.Application.DTOs;
 using Library.Application.Interfaces;
-using Library.Domain.Entities;
-using Library.Persistence.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
-namespace Library.Application.Services
+namespace Library.Presentation.Controllers
 {
-    public class BookService : IBookService
+    [ApiController]
+    [Route("api/[controller]")]
+    public class BookController : ControllerBase
     {
-        private readonly IBookRepository _bookRepository;
-        private readonly IMapper _mapper;
+        private readonly IBookService _bookService;
 
-        public BookService(
-            IBookRepository bookRepository,
-            IMapper mapper)
+        public BookController(IBookService bookService)
         {
-            _bookRepository = bookRepository;
-            _mapper = mapper;
+            _bookService = bookService;
         }
 
-        public async Task<List<BookDto>> GetAllAsync()
+        [HttpGet]
+        public async Task<IActionResult> GetAll()
         {
-            var books = await _bookRepository.GetAllAsync();
+            var books = await _bookService.GetAllAsync();
 
-            return _mapper.Map<List<BookDto>>(books);
+            return Ok(books);
         }
 
-        public async Task<BookDto> GetByIdAsync(int id)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var book = await _bookRepository.GetByIdAsync(id);
+            var book = await _bookService.GetByIdAsync(id);
 
-            return _mapper.Map<BookDto>(book);
+            if (book == null)
+            {
+                return NotFound();
+            }
+
+            return Ok(book);
         }
 
-        public async Task AddAsync(BookDto bookDto)
+        [HttpPost]
+        public async Task<IActionResult> Add(BookDto bookDto)
         {
-            var book = _mapper.Map<Book>(bookDto);
+            await _bookService.AddAsync(bookDto);
 
-            await _bookRepository.AddAsync(book);
+            return Ok(bookDto);
         }
 
-        public async Task UpdateAsync(BookDto bookDto)
+        [HttpPut]
+        public async Task<IActionResult> Update(BookDto bookDto)
         {
-            var book = _mapper.Map<Book>(bookDto);
+            await _bookService.UpdateAsync(bookDto);
 
-            await _bookRepository.UpdateAsync(book);
+            return Ok(bookDto);
         }
 
-        public async Task DeleteAsync(int id)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
         {
-            await _bookRepository.DeleteAsync(id);
+            await _bookService.DeleteAsync(id);
+
+            return Ok();
         }
     }
 }
