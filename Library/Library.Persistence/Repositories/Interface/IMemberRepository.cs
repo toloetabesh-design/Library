@@ -3,10 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Library.Domain.Entities;
 
-namespace Library.Persistence.Repositories.Interface
+namespace Library.Persistence.Interfaces
 {
-    internal class IMemberRepository
+    public interface IMemberRepository
     {
+        Task<List<Member>> GetAllAsync();
+
+        Task<Member> GetByIdAsync(int id);
+
+        Task AddAsync(Member member);
+
+        Task UpdateAsync(Member member);
+
+        Task DeleteAsync(int id);
     }
 }

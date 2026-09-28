@@ -3,10 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Library.Domain.Entities;
 
-namespace Library.Persistence.Repositories.Interface
+namespace Library.Persistence.Interfaces
 {
-    internal class IBorrowingRepository
+    public interface IBorrowingRepository
     {
+        Task<List<Borrowing>> GetAllAsync();
+
+        Task<Borrowing> GetByIdAsync(int id);
+
+        Task AddAsync(Borrowing borrowing);
+
+        Task UpdateAsync(Borrowing borrowing);
+
+        Task DeleteAsync(int id);
     }
 }
