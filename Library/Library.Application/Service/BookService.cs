@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace Library.Application.Service
 {
-    internal class BookService
+    public class BookService
     {
+
     }
 }
