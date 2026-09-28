@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Library.Persistence.Repositories.Interface
 {
-    internal class IBorrowing
+    internal class IBorrowingRepository
     {
     }
 }

@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Library.Domian.Entities
 {
-    internal class Author
+    public class Author
     {
     }
 }
