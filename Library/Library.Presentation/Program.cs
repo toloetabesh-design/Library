@@ -1,25 +1,33 @@
-namespace Library.Presentation
+using Library.Application.Interfaces;
+using Library.Application.Profiles;
+using Library.Application.Services;
+using Library.Persistence;
+using Library.Persistence.Interfaces;
+using Library.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
+
+var builder = WebApplication.CreateBuilder(args);
+
+builder.Services.AddControllers();
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(
+        builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddAutoMapper(cfg =>
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var builder = WebApplication.CreateBuilder(args);
+    cfg.AddProfile<BookProfile>();
+});
 
-            // Add services to the container.
+builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IBookService, BookService>();
 
-            builder.Services.AddControllers();
+var app = builder.Build();
 
-            var app = builder.Build();
+app.UseHttpsRedirection();
 
-            // Configure the HTTP request pipeline.
+app.UseAuthorization();
 
-            app.UseAuthorization();
+app.MapControllers();
 
-
-            app.MapControllers();
-
-            app.Run();
-        }
-    }
-}
+app.Run();
