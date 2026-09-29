@@ -56,6 +56,13 @@ namespace Library.Persistence
                     Stock = 5
                 }
             );
+            modelBuilder.Entity<Author>().HasData(
+    new Author
+    {
+        Id = 1,
+        Name = "آنتوان دو سنت اگزوپری"
+    }
+);
         }
     }
 }
