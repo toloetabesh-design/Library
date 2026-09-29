@@ -39,7 +39,7 @@ namespace Library.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Add(BookDto bookDto)
         {
-            await _bookService.AddAsync(bookDto);
+            
 
             return Ok(bookDto);
         }
