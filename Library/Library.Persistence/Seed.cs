@@ -7,6 +7,26 @@ namespace Library.Persistence
     {
         public static void SeedData(ModelBuilder modelBuilder)
         {
+            // Category
+            modelBuilder.Entity<Category>().HasData(
+                new Category
+                {
+                    Id = 1,
+                    Name = "رمان"
+                },
+                new Category
+                {
+                    Id = 2,
+                    Name = "علمی"
+                },
+                new Category
+                {
+                    Id = 3,
+                    Name = "تاریخی"
+                }
+            );
+
+            // Book
             modelBuilder.Entity<Book>().HasData(
                 new Book
                 {
