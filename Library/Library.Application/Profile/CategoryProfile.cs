@@ -3,10 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
+using Library.Application.DTOs;
+using Library.Domain.Entities;
 
-namespace Library.Application.Profile
+namespace Library.Application.Profiles
 {
-    internal class CategoryProfile
+    public class CategoryProfile : AutoMapper.Profile
     {
+        public CategoryProfile()
+        {
+            CreateMap<Category, CategoryDto>();
+            CreateMap<CategoryDto, Category>();
+        }
     }
 }

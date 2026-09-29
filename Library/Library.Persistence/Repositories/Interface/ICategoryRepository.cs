@@ -5,13 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Library.Domain.Entities;
 
-namespace Library.Persistence.Interfaces
+namespace Library.Application.Interfaces
 {
     public interface ICategoryRepository
     {
-        Task<List<Category>> GetAllAsync();
+        Task<IEnumerable<Category>> GetAsync();
 
-        Task<Category> GetByIdAsync(int id);
+        Task<Category?> GetByIdAsync(int id);
 
         Task AddAsync(Category category);
 
