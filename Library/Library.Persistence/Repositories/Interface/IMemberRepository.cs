@@ -5,13 +5,15 @@ using System.Text;
 using System.Threading.Tasks;
 using Library.Domain.Entities;
 
-namespace Library.Persistence.Interfaces
+
+
+namespace Library.Application.Interfaces
 {
     public interface IMemberRepository
     {
-        Task<List<Member>> GetAllAsync();
+        Task<IEnumerable<Member>> GetAsync();
 
-        Task<Member> GetByIdAsync(int id);
+        Task<Member?> GetByIdAsync(int id);
 
         Task AddAsync(Member member);
 
