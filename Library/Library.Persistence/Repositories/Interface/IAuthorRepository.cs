@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Library.Domain.Entities;
 
-namespace Library.Persistence.Interfaces
+
+namespace Library.Application.Interfaces
 {
     public interface IAuthorRepository
     {
-        Task<List<Author>> GetAllAsync();
+        Task<IEnumerable<Author>> GetAsync();
 
-        Task<Author> GetByIdAsync(int id);
+        Task<Author?> GetByIdAsync(int id);
 
         Task AddAsync(Author author);
 

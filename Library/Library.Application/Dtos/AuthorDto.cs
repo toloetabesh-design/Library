@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
-namespace Library.Application.Dtos
+namespace Library.Application.DTOs
 {
-    internal class AuthorDto
+    public class AuthorDto
     {
+        public int Id { get; set; }
+
+        public string Name { get; set; } = string.Empty;
     }
 }

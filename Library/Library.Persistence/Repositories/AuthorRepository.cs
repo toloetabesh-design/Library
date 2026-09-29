@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Library.Application.Interfaces;
 using Library.Domain.Entities;
-using Library.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library.Persistence.Repositories
@@ -18,17 +18,14 @@ namespace Library.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<List<Author>> GetAllAsync()
+        public async Task<IEnumerable<Author>> GetAsync()
         {
-            return await _context.Authors
-                .Include(x => x.Books)
-                .ToListAsync();
+            return await _context.Authors.ToListAsync();
         }
 
-        public async Task<Author> GetByIdAsync(int id)
+        public async Task<Author?> GetByIdAsync(int id)
         {
             return await _context.Authors
-                .Include(x => x.Books)
                 .FirstOrDefaultAsync(x => x.Id == id);
         }
 
@@ -46,8 +43,7 @@ namespace Library.Persistence.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            var author = await _context.Authors
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var author = await GetByIdAsync(id);
 
             if (author != null)
             {
