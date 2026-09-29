@@ -3,10 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Library.Application.DTOs;
+using Library.Domain.Entities;
 
-namespace Library.Application.Profile
+namespace Library.Application.Profiles
 {
-    internal class BorrowingProfile
+    public class BorrowingProfile : AutoMapper.Profile
     {
+        public BorrowingProfile()
+        {
+            CreateMap<Borrowing, BorrowingDto>();
+            CreateMap<BorrowingDto, Borrowing>();
+        }
     }
 }
