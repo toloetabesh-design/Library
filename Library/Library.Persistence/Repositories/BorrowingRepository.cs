@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Library.Application.Interfaces;
 using Library.Domain.Entities;
-using Library.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace Library.Persistence.Repositories
@@ -18,7 +18,7 @@ namespace Library.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<List<Borrowing>> GetAllAsync()
+        public async Task<IEnumerable<Borrowing>> GetAsync()
         {
             return await _context.Borrowings
                 .Include(x => x.Book)
@@ -26,7 +26,7 @@ namespace Library.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public async Task<Borrowing> GetByIdAsync(int id)
+        public async Task<Borrowing?> GetByIdAsync(int id)
         {
             return await _context.Borrowings
                 .Include(x => x.Book)
@@ -48,8 +48,7 @@ namespace Library.Persistence.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            var borrowing = await _context.Borrowings
-                .FirstOrDefaultAsync(x => x.Id == id);
+            var borrowing = await GetByIdAsync(id);
 
             if (borrowing != null)
             {
