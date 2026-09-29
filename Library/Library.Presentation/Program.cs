@@ -30,6 +30,8 @@ builder.Services.AddAutoMapper(cfg =>
     cfg.AddProfile<BookProfile>();
 });
 
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<IMemberService, MemberService>();
 
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 
