@@ -5,13 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using Library.Domain.Entities;
 
-namespace Library.Persistence.Interfaces
+
+namespace Library.Application.Interfaces
 {
     public interface IBorrowingRepository
     {
-        Task<List<Borrowing>> GetAllAsync();
+        Task<IEnumerable<Borrowing>> GetAsync();
 
-        Task<Borrowing> GetByIdAsync(int id);
+        Task<Borrowing?> GetByIdAsync(int id);
 
         Task AddAsync(Borrowing borrowing);
 
