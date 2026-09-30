@@ -1,4 +1,4 @@
-using Library.Application.Interfaces;
+﻿using Library.Application.Interfaces;
 using Library.Application.Profiles;
 using Library.Application.Services;
 using Library.Persistence;
@@ -10,8 +10,29 @@ using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Logging.ClearProviders();
-builder.Host.UseNLog();
+var logger = LogManager.Setup().GetCurrentClassLogger(); // این خط را ساده کن
+
+try
+{
+   
+
+    // ۲. این بخش را به این شکل بنویس (این خودش فایل nlog.config را پیدا می‌کند)
+    builder.Logging.ClearProviders();
+    builder.Host.UseNLog();
+
+    // ... بقیه کدها
+}
+catch (Exception exception)
+{
+    logger.Error(exception, "Stopped program because of exception");
+    throw;
+}
+finally
+{
+    LogManager.Shutdown();
+}
+
+
 
 builder.Services.AddControllers();
 
