@@ -18,5 +18,6 @@ namespace Library.Application.Interfaces
         Task UpdateAsync(CategoryDto categoryDto);
 
         Task DeleteAsync(int id);
+        Task CreateCategoryAsync(object name);
     }
 }

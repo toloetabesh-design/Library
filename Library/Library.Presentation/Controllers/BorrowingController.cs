@@ -1,89 +1,57 @@
-﻿using Library.Application.DTOs;
-using Library.Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
+using YourProject.Application.Interfaces; // مسیر اینترفیس سرویس خودت را جایگزین کن
+using YourProject.Domain.Entities; // مسیر مدل‌های خودت را جایگزین کن
 
-namespace Library.Presentation.Controller
+namespace YourProject.API.Controllers;
+
+[ApiController]
+[Route("api/[controller]")]
+public class BorrowingController : ControllerBase
 {
-    // ۱. ساخت کلاس پایه
-    public abstract class BaseController : ControllerBase
-    {
-        protected readonly ILogger _logger;
+    private readonly IBorrowingService _borrowingService;
+    private readonly ILogger<BorrowingController> _logger;
 
-        protected BaseController(ILogger logger)
-        {
-            _logger = logger;
-        }
+    // تزریق سرویس و لاگر از طریق سازنده
+    public BorrowingController(IBorrowingService borrowingService, ILogger<BorrowingController> logger)
+    {
+        _borrowingService = borrowingService;
+        _logger = logger;
     }
 
-    // ۲. استفاده در کنترلرها
-    public class CustomerController : BaseController
+    /// <summary>
+    /// ثبت یک عملیات امانت گرفتن جدید
+    /// </summary>
+    [HttpPost]
+    public async Task<IActionResult> Borrow([FromBody] BorrowRequest request)
     {
-        public CustomerController(ILogger<CustomerController> logger) : base(logger)
+        _logger.LogInformation("درخواست امانت گرفتن برای کالا با کد: {ItemId} توسط کاربر: {UserId}",
+            request.ItemId, request.UserId);
+
+        try
         {
+            // ارسال درخواست به لایه بیزنس (Service)
+            var result = await _borrowingService.ProcessBorrowingAsync(request);
+
+            if (result.IsSuccess)
+            {
+                _logger.LogInformation("عملیات امانت گرفتن با موفقیت انجام شد. شماره رسید: {ReceiptId}", result.Id);
+                return Ok(result);
+            }
+
+            _logger.LogWarning("عملیات امانت گرفتن شکست خورد: {ErrorMessage}", result.ErrorMessage);
+            return BadRequest(new { message = result.ErrorMessage });
         }
-
-        [HttpGet]
-        public IActionResult Get()
+        catch (Exception ex)
         {
-            _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
-            return Ok();
-        }
-
-   
-    
-    [ApiController]
-        [Route("api/[controller]")]
-        public class BorrowingController : ControllerBase
-        {
-            private readonly IBorrowingService _borrowingService;
-
-            public BorrowingController(IBorrowingService borrowingService)
-            {
-                _borrowingService = borrowingService;
-            }
-
-            [HttpGet]
-            public async Task<IActionResult> Get()
-            {
-                var borrowings = await _borrowingService.GetAsync();
-
-                return Ok(borrowings);
-            }
-
-            [HttpGet("{id}")]
-            public async Task<IActionResult> GetById(int id)
-            {
-                var borrowing = await _borrowingService.GetByIdAsync(id);
-
-                if (borrowing == null)
-                    return NotFound();
-
-                return Ok(borrowing);
-            }
-
-            [HttpPost]
-            public async Task<IActionResult> Add(BorrowingDto borrowingDto)
-            {
-                await _borrowingService.AddAsync(borrowingDto);
-
-                return Ok(borrowingDto);
-            }
-
-            [HttpPut]
-            public async Task<IActionResult> Update(BorrowingDto borrowingDto)
-            {
-                await _borrowingService.UpdateAsync(borrowingDto);
-
-                return Ok(borrowingDto);
-            }
-
-            [HttpDelete("{id}")]
-            public async Task<IActionResult> Delete(int id)
-            {
-                await _borrowingService.DeleteAsync(id);
-
-                return Ok();
-            }
+            _logger.LogError(ex, "خطای غیرمنتظره در BorrowingController هنگام ثبت امانت");
+            return StatusCode(500, "خطایی در سرور رخ داده است.");
         }
     }
 }
+
+// مدل درخواست (DTO) برای اینکه کاربر اطلاعات را در بدنه (Body) بفرستد
+public record BorrowRequest(int ItemId, int UserId, int Quantity);
+
+// مدل پاسخ برای اینکه نتیجه را به کاربر برگردانیم
+public record BorrowResponse(bool IsSuccess, int? Id, string? ErrorMessage);
+
