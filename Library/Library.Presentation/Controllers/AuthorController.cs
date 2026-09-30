@@ -18,9 +18,9 @@ public abstract class BaseController : ControllerBase
 }
 
 // ۲. استفاده در کنترلرها
-public class CustomerController : BaseController
+public class AuthorController : BaseController
 {
-    public CustomerController(ILogger<CustomerController> logger) : base(logger)
+    public AuthorController(ILogger<AuthorController> logger) : base(logger)
     {
     }
 
