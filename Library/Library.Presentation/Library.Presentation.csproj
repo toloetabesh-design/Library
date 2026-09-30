@@ -28,4 +28,10 @@
     <ProjectReference Include="..\Library.Persistence\Library.Persistence.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="C:\Users\user\.nuget\packages\nlog.config\4.7.15\contentFiles\any\any\NLog.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>
