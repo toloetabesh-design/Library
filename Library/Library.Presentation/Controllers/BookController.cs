@@ -3,7 +3,34 @@ using Library.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Library.Presentation.Controllers
+   
+
 {
+    // ۱. ساخت کلاس پایه
+    public abstract class BaseController : ControllerBase
+    {
+        protected readonly ILogger _logger;
+
+        protected BaseController(ILogger logger)
+        {
+            _logger = logger;
+        }
+    }
+
+    // ۲. استفاده در کنترلرها
+    public class CustomerController : BaseController
+    {
+        public CustomerController(ILogger<CustomerController> logger) : base(logger)
+        {
+        }
+
+        [HttpGet]
+        public IActionResult Get()
+        {
+            _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
+            return Ok();
+        }
+    }
     [ApiController]
     [Route("api/[controller]")]
     public class BookController : ControllerBase
