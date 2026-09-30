@@ -1,6 +1,39 @@
 ﻿using Library.Application.DTOs;
 using Library.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
+
+
+
+[ApiController]
+[Route("[controller]")]
+public class CustomerController : ControllerBase
+{
+    // تزریق کردن ILogger از طریق سازنده (Constructor)
+    private readonly ILogger<CustomerController> _logger;
+
+    public CustomerController(ILogger<CustomerController> logger)
+    {
+        _logger = logger;
+    }
+
+    [HttpGet]
+    public IActionResult Get()
+    {
+        _logger.LogInformation("درخواست مشاهده مشتری‌ها دریافت شد.");
+
+        try
+        {
+            // فرض کنید اینجا عملیاتی انجام می‌دهید
+            return Ok(new { Name = "Ali" });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "خطایی در دریافت اطلاعات مشتری رخ داد.");
+            return StatusCode(500);
+        }
+    }
+}
 
 namespace Library.Presentation.Controllers
 {
