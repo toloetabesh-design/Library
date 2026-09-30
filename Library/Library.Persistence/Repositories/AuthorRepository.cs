@@ -20,13 +20,13 @@ namespace Library.Persistence.Repositories
 
         public async Task<IEnumerable<Author>> GetAsync()
         {
-            return await _context.Authors.ToListAsync();
+            return   _context.Authors.ToList();
         }
 
         public async Task<Author?> GetByIdAsync(int id)
         {
-            return await _context.Authors
-                .FirstOrDefaultAsync(x => x.Id == id);
+            
+            return  _context.Authors.FirstOrDefault(a=>a.Id==id); 
         }
 
         public async Task AddAsync(Author author)

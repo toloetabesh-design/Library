@@ -5,9 +5,12 @@ using Library.Persistence;
 using Library.Persistence.Interfaces;
 using Library.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
+using NLog;
+using NLog.Web;
 
 var builder = WebApplication.CreateBuilder(args);
-
+builder.Logging.ClearProviders();
+builder.Host.UseNLog();
 
 builder.Services.AddControllers();
 
@@ -28,6 +31,10 @@ builder.Services.AddDbContext<AppDbContext>(options =>
 builder.Services.AddAutoMapper(cfg =>
 {
     cfg.AddProfile<BookProfile>();
+    cfg.AddProfile<AuthorProfile>();
+    cfg.AddProfile<CategoryProfile>();
+    cfg.AddProfile<MemberProfile>();
+    cfg.AddProfile<BorrowingProfile>();
 });
 
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
