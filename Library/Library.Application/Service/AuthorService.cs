@@ -1,30 +1,88 @@
-﻿using System;
+﻿using AutoMapper;
+using Library.Application.DTOs;
+using Library.Application.Interfaces;
+using Library.Domain.Entities;
+using Library.Persistence; // این خط خیلی مهم است (اضافه کنید)
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Library.Application.Interfaces;
-using Library.Domain.Entities;
-using Library.Persistence; // این خط خیلی مهم است (اضافه کنید)
 
 namespace Library.Application.Services
 {
+    
+
+    
+
     public class AuthorService : IAuthorService
     {
-        // 1. اینجا باید AppDbContext باشد، نه DbContext
-        private readonly AppDbContext _context;
+        private readonly IAuthorRepository _authorRepository;
+        private readonly IMapper _mapper;
 
-        // 2. در کانستراکتور هم باید AppDbContext را بگیرید
-        public AuthorService(AppDbContext context)
+        public AuthorService(
+            IAuthorRepository authorRepository,
+            IMapper mapper)
         {
-            _context = context;
+            _authorRepository = authorRepository;
+            _mapper = mapper;
         }
 
-        public async Task<IEnumerable<Author>> GetAllAuthorsAsync()
+        public async Task<IEnumerable<AuthorDto>> GetAsync()
         {
-            // حالا که سیستم می‌داند _context از نوع AppDbContext است، Authors را می‌شناسد
-            return await _context.Authors.ToListAsync();
+            var authors = await _authorRepository.GetAsync();
+
+            return _mapper.Map<IEnumerable<AuthorDto>>(authors);
+        }
+
+        public async Task<AuthorDto?> GetByIdAsync(int id)
+        {
+            var author = await _authorRepository.GetByIdAsync(id);
+
+            if (author == null)
+                return null;
+
+            return _mapper.Map<AuthorDto>(author);
+        }
+
+        public async Task AddAsync(AuthorDto authorDto)
+        {
+            var author = _mapper.Map<Author>(authorDto);
+
+            await _authorRepository.AddAsync(author);
+        }
+
+        public async Task UpdateAsync(AuthorDto authorDto)
+        {
+            var author = _mapper.Map<Author>(authorDto);
+
+            await _authorRepository.UpdateAsync(author);
+        }
+
+        public async Task DeleteAsync(int id)
+        {
+            await _authorRepository.DeleteAsync(id);
+        }
+
+        public Task<IEnumerable<Author>> GetAllAuthorsAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Author?> GetAuthorByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task AddAuthorAsync(Author author)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<bool> DeleteAuthorAsync(int id)
+        {
+            throw new NotImplementedException();
         }
     }
 }
