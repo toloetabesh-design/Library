@@ -1,55 +1,33 @@
 ﻿using Library.Application.DTOs;
 using Library.Application.Interfaces;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.AspNetCore.Mvc;
-
-
-
-
-// ۱. ساخت کلاس پایه
-public abstract class BaseController : ControllerBase
-{
-    protected readonly ILogger _logger;
-
-    protected BaseController(ILogger logger)
-    {
-        _logger = logger;
-    }
-}
-
-// ۲. استفاده در کنترلرها
-public class AuthorController : BaseController
-{
-    public AuthorController(ILogger<AuthorController> logger) : base(logger)
-    {
-    }
-
-    [HttpGet]
-    public IActionResult Get()
-    {
-        _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
-        return Ok();
-    }
-}
+using Microsoft.AspNetCore.Mvc; 
 
 
 
 namespace Library.Presentation.Controllers
 {
+
     [ApiController]
     [Route("api/[controller]")]
     public class AuthorController : ControllerBase
     {
+        protected readonly ILogger _logger;
+
+ 
+
         private readonly IAuthorService _authorService;
 
-        public AuthorController(IAuthorService authorService)
+        public AuthorController(IAuthorService authorService, ILogger logger)
         {
             _authorService = authorService;
+            _logger = logger;
         }
+ 
 
-        [HttpGet]
+        [System.Web.Http.HttpGet]
         public async Task<IActionResult> Get()
         {
+            _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
             var authors = await _authorService.GetAsync();
 
             return Ok(authors);
@@ -58,6 +36,7 @@ namespace Library.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
             var author = await _authorService.GetByIdAsync(id);
 
             if (author == null)
