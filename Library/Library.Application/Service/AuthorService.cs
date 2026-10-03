@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using AutoMapper;
 using Library.Application.DTOs;
 using Library.Application.Interfaces;
 using Library.Domain.Entities;
 
 namespace Library.Application.Services
-{
+{using AutoMapper;
+
     public class AuthorService : IAuthorService
     {
         private readonly IAuthorRepository _authorRepository;
@@ -57,6 +57,36 @@ namespace Library.Application.Services
         public async Task DeleteAsync(int id)
         {
             await _authorRepository.DeleteAsync(id);
+        }
+
+        Task<IEnumerable<AuthorDto>> IAuthorService.GetAsync()
+        {
+            throw new NotImplementedException();
+        }
+
+        Task<AuthorDto?> IAuthorService.GetByIdAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IAuthorService.AddAsync(AuthorDto authorDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IAuthorService.UpdateAsync(AuthorDto authorDto)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IAuthorService.DeleteAsync(int id)
+        {
+            throw new NotImplementedException();
+        }
+
+        Task IAuthorService.GetAllAuthorsAsync()
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -1,72 +1,64 @@
-﻿using Library.Application.DTOs;
-using Library.Application.Interfaces;
-using Microsoft.AspNetCore.Mvc; 
-
-
-
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using Library.Application.Interfaces; 
+using Library.Domain.Entities;      
 namespace Library.Presentation.Controllers
 {
-
     [ApiController]
     [Route("api/[controller]")]
     public class AuthorController : ControllerBase
     {
-        protected readonly ILogger _logger;
-
- 
-
+        // استفاده از ILogger<AuthorController> برای ثبت دقیق نام کلاس در لاگ‌ها
+        protected readonly ILogger<AuthorController> _logger;
         private readonly IAuthorService _authorService;
 
-        public AuthorController(IAuthorService authorService, ILogger logger)
+        // تزریق وابستگی‌ها به صورت صحیح
+        public AuthorController(IAuthorService authorService, ILogger<AuthorController> logger)
         {
             _authorService = authorService;
             _logger = logger;
         }
- 
 
+        // مثال از یک متد برای گرفتن لیست نویسندگان
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
-            _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
-            var authors = await _authorService.GetAsync();
-
-            return Ok(authors);
+            try
+            {
+                _logger.LogInformation("جلب لیست تمام نویسندگان از طریق API");
+                var authors = await _authorService.GetAllAuthorsAsync();
+                return Ok(authors);
+            }
+            catch (Exception ex)
+            {
+                // ثبت خطا در فایل لاگ که قبلاً تنظیم کردی
+                _logger.LogError(ex, "خطا در متد GetAll در AuthorController");
+                return StatusCode(500, "خطایی در سرور رخ داده است.");
+            }
         }
 
+        // مثال از یک متد برای گرفتن یک نویسنده بر اساس ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
-            var author = await _authorService.GetByIdAsync(id);
+            try
+            {
+                _logger.LogInformation("درخواست دریافت نویسنده با شناسه: {AuthorId}", id);
+                var author = await _authorService.GetAuthorByIdAsync(id);
 
-            if (author == null)
-                return NotFound();
+                if (author == null)
+                {
+                    _logger.LogWarning("نویسنده با شناسه {AuthorId} یافت نشد", id);
+                    return NotFound();
+                }
 
-            return Ok(author);
-        }
-
-        [HttpPost]
-        public async Task<IActionResult> Add(AuthorDto authorDto)
-        {
-            await _authorService.AddAsync(authorDto);
-
-            return Ok(authorDto);
-        }
-
-        [HttpPut]
-        public async Task<IActionResult> Update(AuthorDto authorDto)
-        {
-            await _authorService.UpdateAsync(authorDto);
-
-            return Ok(authorDto);
-        }
-
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
-        {
-            await _authorService.DeleteAsync(id);
-
-            return Ok();
+                return Ok(author);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در متد GetById برای شناسه: {AuthorId}", id);
+                return StatusCode(500, "خطایی در سرور رخ داده است.");
+            }
         }
     }
 }

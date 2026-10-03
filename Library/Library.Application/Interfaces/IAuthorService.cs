@@ -18,5 +18,6 @@ namespace Library.Application.Interfaces
         Task UpdateAsync(AuthorDto authorDto);
 
         Task DeleteAsync(int id);
+        Task GetAllAuthorsAsync();
     }
 }
