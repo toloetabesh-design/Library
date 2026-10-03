@@ -3,10 +3,8 @@ using Library.Domain.Entities;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.AspNetCore.Mvc;
-using Library.Application.Interfaces; // این نیم‌اسپیس را طبق پروژه خودتان چک کنید
 
-namespace Library.Presentation.Controllers // نیم‌اسپیس خودتان را بگذارید
+namespace Library.Presentation.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
@@ -15,29 +13,81 @@ namespace Library.Presentation.Controllers // نیم‌اسپیس خودتان �
         private readonly IAuthorService _authorService;
         private readonly ILogger<AuthorController> _logger;
 
-        // کانستراکتور برای تزریق وابستگی‌ها
         public AuthorController(IAuthorService authorService, ILogger<AuthorController> logger)
         {
             _authorService = authorService;
             _logger = logger;
         }
 
-        // متد دریافت همه نویسندگان
+        // ۱. دریافت همه نویسندگان (GET)
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                // این خط دیگر خطا نمی‌دهد چون سرویس شما اصلاح شده است
                 var authors = await _authorService.GetAllAuthorsAsync();
-
                 return Ok(authors);
             }
             catch (Exception ex)
             {
-                // لاگ کردن خطا برای دیباگ راحت‌تر
                 _logger.LogError(ex, "خطایی در دریافت لیست نویسندگان رخ داد.");
+                return StatusCode(500, "خطای داخلی سرور");
+            }
+        }
 
+        // ۲. دریافت یک نویسنده با ID (GET)
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                var author = await _authorService.GetAuthorByIdAsync(id);
+                if (author == null)
+                    return NotFound($"نویسنده‌ای با شناسه {id} یافت نشد.");
+
+                return Ok(author);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در دریافت نویسنده با شناسه {Id}", id);
+                return StatusCode(500, "خطای داخلی سرور");
+            }
+        }
+
+        // ۳. افزودن نویسنده جدید (POST)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] Author author)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                await _authorService.AddAuthorAsync(author);
+                return CreatedAtAction(nameof(GetById), new { id = author.Id }, author);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در ایجاد نویسنده جدید");
+                return StatusCode(500, "خطای داخلی سرور");
+            }
+        }
+
+        // ۴. حذف نویسنده (DELETE)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            try
+            {
+                var success = await _authorService.DeleteAuthorAsync(id);
+                if (!success)
+                    return NotFound($"نویسنده‌ای با شناسه {id} برای حذف یافت نشد.");
+
+                return NoContent(); // کد 240 یعنی موفق آمیز بدون محتوای بازگشتی
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در حذف نویسنده با شناسه {Id}", id);
                 return StatusCode(500, "خطای داخلی سرور");
             }
         }
