@@ -3,90 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Library.Application.DTOs;
+using Microsoft.EntityFrameworkCore;
 using Library.Application.Interfaces;
 using Library.Domain.Entities;
+using Library.Persistence; // این خط خیلی مهم است (اضافه کنید)
 
 namespace Library.Application.Services
-{using AutoMapper;
-
+{
     public class AuthorService : IAuthorService
     {
-        private readonly IAuthorRepository _authorRepository;
-        private readonly IMapper _mapper;
+        // 1. اینجا باید AppDbContext باشد، نه DbContext
+        private readonly AppDbContext _context;
 
-        public AuthorService(
-            IAuthorRepository authorRepository,
-            IMapper mapper)
+        // 2. در کانستراکتور هم باید AppDbContext را بگیرید
+        public AuthorService(AppDbContext context)
         {
-            _authorRepository = authorRepository;
-            _mapper = mapper;
+            _context = context;
         }
 
-        public async Task<IEnumerable<AuthorDto>> GetAsync()
+        public async Task<IEnumerable<Author>> GetAllAuthorsAsync()
         {
-            var authors = await _authorRepository.GetAsync();
-
-            return _mapper.Map<IEnumerable<AuthorDto>>(authors);
-        }
-
-        public async Task<AuthorDto?> GetByIdAsync(int id)
-        {
-            var author = await _authorRepository.GetByIdAsync(id);
-
-            if (author == null)
-                return null;
-
-            return _mapper.Map<AuthorDto>(author);
-        }
-
-        public async Task AddAsync(AuthorDto authorDto)
-        {
-            var author = _mapper.Map<Author>(authorDto);
-
-            await _authorRepository.AddAsync(author);
-        }
-
-        public async Task UpdateAsync(AuthorDto authorDto)
-        {
-            var author = _mapper.Map<Author>(authorDto);
-
-            await _authorRepository.UpdateAsync(author);
-        }
-
-        public async Task DeleteAsync(int id)
-        {
-            await _authorRepository.DeleteAsync(id);
-        }
-
-        Task<IEnumerable<AuthorDto>> IAuthorService.GetAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        Task<AuthorDto?> IAuthorService.GetByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IAuthorService.AddAsync(AuthorDto authorDto)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IAuthorService.UpdateAsync(AuthorDto authorDto)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IAuthorService.DeleteAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        Task IAuthorService.GetAllAuthorsAsync()
-        {
-            throw new NotImplementedException();
+            // حالا که سیستم می‌داند _context از نوع AppDbContext است، Authors را می‌شناسد
+            return await _context.Authors.ToListAsync();
         }
     }
 }
