@@ -16,5 +16,6 @@ namespace Library.Application.Interfaces
 
     public class CreateCategoryDto
     {
+        public string? Name { get; set; }
     }
 }

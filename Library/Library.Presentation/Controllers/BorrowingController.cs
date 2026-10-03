@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using YourProject.Application.Interfaces; // مسیر اینترفیس سرویس خودت را جایگزین کن
-using YourProject.Domain.Entities; // مسیر مدل‌های خودت را جایگزین کن
+using Library.Application.Interfaces; 
+using Library.Domain.Entities; 
 
 namespace YourProject.API.Controllers;
 
