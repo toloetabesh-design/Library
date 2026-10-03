@@ -24,7 +24,7 @@ namespace Library.Presentation.Controllers
         }
  
 
-        [System.Web.Http.HttpGet]
+        [HttpGet]
         public async Task<IActionResult> Get()
         {
             _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
