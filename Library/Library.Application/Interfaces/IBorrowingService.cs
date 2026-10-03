@@ -18,5 +18,7 @@ namespace Library.Application.Interfaces
         Task UpdateAsync(BorrowingDto borrowingDto);
 
         Task DeleteAsync(int id);
+
+        Task<BorrowingDto> ProcessBorrowingAsync(CreateBorrowingDto request);
     }
 }

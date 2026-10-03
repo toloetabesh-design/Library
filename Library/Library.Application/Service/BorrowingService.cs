@@ -58,5 +58,19 @@ namespace Library.Application.Services
         {
             await _borrowingRepository.DeleteAsync(id);
         }
+
+        public async Task<BorrowingDto> ProcessBorrowingAsync(CreateBorrowingDto request)
+        {
+            var borrowing = new Borrowing
+            {
+                BookId = request.BookId,
+                MemberId = request.MemberId,
+                BorrowDate = DateTime.UtcNow
+            };
+
+            await _borrowingRepository.AddAsync(borrowing);
+
+            return _mapper.Map<BorrowingDto>(borrowing);
+        }
     }
 }
