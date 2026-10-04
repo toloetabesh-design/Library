@@ -10,14 +10,14 @@ namespace Library.Application.Interfaces
 {
     public interface IAuthorService
     {
-        
+
         Task<IEnumerable<Author>> GetAllAuthorsAsync();
 
-       
+
         Task<Author?> GetAuthorByIdAsync(int id);
 
         Task AddAuthorAsync(Author author);
-
+        Task UpdatehorAsync(Author author);
                Task<bool> DeleteAuthorAsync(int id);
     }
 }
