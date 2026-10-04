@@ -45,6 +45,7 @@ namespace Library.Application.Services
             var author = _mapper.Map<Author>(authorDto);
 
             await _authorRepository.AddAsync(author);
+
         }
 
         public async Task UpdateAsync(AuthorDto authorDto)
