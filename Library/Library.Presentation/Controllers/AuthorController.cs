@@ -21,6 +21,7 @@ namespace Library.Presentation.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
+            _logger.LogInformation("خطایی در دریافت لیست نویسندگان رخ داد.");
             try
             {
                 var authors = await _authorService.GetAsync();
@@ -36,6 +37,7 @@ namespace Library.Presentation.Controllers
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
+            _logger.LogInformation("خطایی در دریافت لیست نویسندگان رخ داد.");
             try
             {
                 var author = await _authorService.GetByIdAsync(id);
@@ -54,6 +56,7 @@ namespace Library.Presentation.Controllers
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] AuthorDto authorDto)
         {
+            _logger.LogInformation("خطایی در دریافت لیست نویسندگان رخ داد.");
             try
             {
                 if (!ModelState.IsValid)
@@ -72,6 +75,7 @@ namespace Library.Presentation.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Update(int id, [FromBody] AuthorDto authorDto)
         {
+            _logger.LogInformation("خطایی در دریافت لیست نویسندگان رخ داد.");
             try
             {
                 if (!ModelState.IsValid)
@@ -93,6 +97,7 @@ namespace Library.Presentation.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
+            _logger.LogInformation("خطایی در دریافت لیست نویسندگان رخ داد.");
             try
             {
                 await _authorService.DeleteAsync(id);
