@@ -20,7 +20,6 @@ namespace Library.Persistence.Repositories
 
         public async Task<IEnumerable<Author>> GetAsync()
         {
-            // به جای .ToList() از .ToListAsync() استفاده کنید و حتماً کلمه await را بنویسید
             return await _context.Authors.ToListAsync();
         }
 
