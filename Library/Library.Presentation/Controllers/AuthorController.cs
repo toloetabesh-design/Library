@@ -69,6 +69,27 @@ namespace Library.Presentation.Controllers
             }
         }
 
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] AuthorDto authorDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                if (id != authorDto.Id)
+                    return BadRequest("ID mismatch");
+
+                await _authorService.UpdateAsync(authorDto);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در به‌روزرسانی نویسنده با شناسه {Id}", id);
+                return StatusCode(500, "خطای داخلی سرور");
+            }
+        }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
