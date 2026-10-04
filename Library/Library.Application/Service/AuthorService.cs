@@ -84,5 +84,10 @@ namespace Library.Application.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task UpdateAuthorAsync(Author author)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
