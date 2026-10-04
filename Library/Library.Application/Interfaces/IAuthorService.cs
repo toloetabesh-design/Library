@@ -4,24 +4,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Library.Application.DTOs;
-using Library.Domain.Entities;
 
 namespace Library.Application.Interfaces
 {
     public interface IAuthorService
     {
-        
-        Task<IEnumerable<Author>> GetAllAuthorsAsync();
+        Task<IEnumerable<AuthorDto>> GetAsync();
 
-        
-        Task<Author?> GetAuthorByIdAsync(int id);
+        Task<AuthorDto?> GetByIdAsync(int id);
 
-      
-        Task AddAuthorAsync(Author author);
+        Task AddAsync(AuthorDto authorDto);
 
-        
-        Task UpdateAuthorAsync(Author author);
+        Task UpdateAsync(AuthorDto authorDto);
 
-        Task<bool> DeleteAuthorAsync(int id);
+        Task DeleteAsync(int id);
     }
 }

@@ -2,8 +2,6 @@
 using Library.Application.DTOs;
 using Library.Application.Interfaces;
 using Library.Domain.Entities;
-using Library.Persistence; 
-using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,10 +10,6 @@ using System.Threading.Tasks;
 
 namespace Library.Application.Services
 {
-    
-
-    
-
     public class AuthorService : IAuthorService
     {
         private readonly IAuthorRepository _authorRepository;
@@ -63,31 +57,6 @@ namespace Library.Application.Services
         public async Task DeleteAsync(int id)
         {
             await _authorRepository.DeleteAsync(id);
-        }
-
-        public Task<IEnumerable<Author>> GetAllAuthorsAsync()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<Author?> GetAuthorByIdAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task AddAuthorAsync(Author author)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<bool> DeleteAuthorAsync(int id)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task UpdateAuthorAsync(Author author)
-        {
-            throw new NotImplementedException();
         }
     }
 }

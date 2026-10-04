@@ -1,7 +1,6 @@
-﻿using Library.Application.Interfaces; 
-using Library.Domain.Entities;
+﻿using Library.Application.DTOs;
+using Library.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 
 namespace Library.Presentation.Controllers
@@ -19,13 +18,12 @@ namespace Library.Presentation.Controllers
             _logger = logger;
         }
 
-        // ۱. دریافت همه نویسندگان (GET)
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
             {
-                var authors = await _authorService.GetAllAuthorsAsync();
+                var authors = await _authorService.GetAsync();
                 return Ok(authors);
             }
             catch (Exception ex)
@@ -35,13 +33,12 @@ namespace Library.Presentation.Controllers
             }
         }
 
-        // ۲. دریافت یک نویسنده با ID (GET)
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
             try
             {
-                var author = await _authorService.GetAuthorByIdAsync(id);
+                var author = await _authorService.GetByIdAsync(id);
                 if (author == null)
                     return NotFound($"نویسنده‌ای با شناسه {id} یافت نشد.");
 
@@ -54,17 +51,16 @@ namespace Library.Presentation.Controllers
             }
         }
 
-        // ۳. افزودن نویسنده جدید (POST)
         [HttpPost]
-        public async Task<IActionResult> Create([FromBody] Author author)
+        public async Task<IActionResult> Create([FromBody] AuthorDto authorDto)
         {
             try
             {
                 if (!ModelState.IsValid)
                     return BadRequest(ModelState);
 
-                await _authorService.AddAuthorAsync(author);
-                return CreatedAtAction(nameof(GetById), new { id = author.Id }, author);
+                await _authorService.AddAsync(authorDto);
+                return CreatedAtAction(nameof(GetById), new { id = authorDto.Id }, authorDto);
             }
             catch (Exception ex)
             {
@@ -73,17 +69,13 @@ namespace Library.Presentation.Controllers
             }
         }
 
-        // ۴. حذف نویسنده (DELETE)
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
             try
             {
-                var success = await _authorService.DeleteAuthorAsync(id);
-                if (!success)
-                    return NotFound($"نویسنده‌ای با شناسه {id} برای حذف یافت نشد.");
-
-                return NoContent(); // کد 240 یعنی موفق آمیز بدون محتوای بازگشتی
+                await _authorService.DeleteAsync(id);
+                return NoContent();
             }
             catch (Exception ex)
             {
