@@ -1,8 +1,7 @@
-﻿using Library.Application.DTOs;
+﻿using AutoMapper;
+using Library.Application.DTOs;
 using Library.Application.Interfaces;
-using Library.Domain.Entities;
-using Library.Persistence.Interfaces;
-using AutoMapper; // فرض می‌کنم از AutoMapper استفاده می‌کنی
+using Library.Domain.Entities; // فرض بر اینکه Entity در این namespace است
 
 namespace Library.Application.Services
 {
@@ -19,7 +18,7 @@ namespace Library.Application.Services
 
         public async Task<IEnumerable<CategoryDto>> GetAsync()
         {
-            var categories = await _categoryRepository.GetAsync();
+            var categories = await _categoryRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<CategoryDto>>(categories);
         }
 
@@ -27,31 +26,39 @@ namespace Library.Application.Services
         {
             var category = await _categoryRepository.GetByIdAsync(id);
             if (category == null) return null;
+
             return _mapper.Map<CategoryDto>(category);
         }
 
-        // متد جدید و بدون خطا
-        public async Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto request)
+        public async Task AddAsync(CategoryDto categoryDto)
         {
-            // ۱. تبدیل DTO به موجودیت (Entity)
-            var category = _mapper.Map<Category>(request);
-
-            // ۲. ذخیره در دیتابیس (Repository)
+            // تبدیل DTO به Entity برای ذخیره در دیتابیس
+            var category = _mapper.Map<Category>(categoryDto);
             await _categoryRepository.AddAsync(category);
-
-            // ۳. برگرداندن خروجی به صورت DTO
-            return _mapper.Map<CategoryDto>(category);
         }
 
         public async Task UpdateAsync(CategoryDto categoryDto)
         {
-            var category = _mapper.Map<Category>(categoryDto);
-            await _categoryRepository.UpdateAsync(category);
+            // ابتدا چک می‌کنیم آیا این دسته‌بندی وجود دارد یا خیر
+            var existingCategory = await _categoryRepository.GetByIdAsync(categoryDto.Id);
+
+            if (existingCategory == null)
+                throw new Exception($"Category with ID {categoryDto.Id} not found.");
+
+            // تبدیل مقادیر DTO به Entity موجود
+            _mapper.Map(categoryDto, existingCategory);
+
+            // ذخیره تغییرات
+            await _categoryRepository.UpdateAsync(existingCategory);
         }
 
         public async Task DeleteAsync(int id)
         {
-            await _categoryRepository.DeleteAsync(id);
+            var category = await _categoryRepository.GetByIdAsync(id);
+            if (category != null)
+            {
+                await _categoryRepository.DeleteAsync(id);
+            }
         }
     }
 }
