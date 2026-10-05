@@ -26,7 +26,7 @@ namespace Library.Presentation.Controllers
             try
             {
                 var books = await _bookService.GetAsync();
-                return Ok(books); // بازگشت وضعیت 200 OK به همراه لیست کتاب‌ها
+                return Ok(books); 
             }
             catch (Exception ex)
             {
