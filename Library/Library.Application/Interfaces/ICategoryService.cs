@@ -6,16 +6,8 @@ namespace Library.Application.Interfaces
     {
         Task<IEnumerable<CategoryDto>> GetAsync();
         Task<CategoryDto?> GetByIdAsync(int id);
-
-        // متد اصلی برای ثبت با DTO
-        Task<CategoryDto> CreateCategoryAsync(CreateCategoryDto request);
-
+        Task AddAsync(CategoryDto categoryDto); 
         Task UpdateAsync(CategoryDto categoryDto);
         Task DeleteAsync(int id);
-    }
-
-    public class CreateCategoryDto
-    {
-        public string? Name { get; set; }
     }
 }
