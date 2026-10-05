@@ -1,11 +1,12 @@
 ﻿using Library.Application.DTOs;
 using Library.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
-namespace Library.WebAPI.Controllers
+namespace Library.Presentation.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] // مسیر: api/borrowing
     public class BorrowingController : ControllerBase
     {
         private readonly IBorrowingService _borrowingService;
@@ -17,50 +18,98 @@ namespace Library.WebAPI.Controllers
             _logger = logger;
         }
 
-        // GET: api/borrowing
+        // 1. دریافت تمام سوابق امانت
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var borrowings = await _borrowingService.GetAsync();
-            return Ok(borrowings);
-        }
-
-        // GET: api/borrowing/5
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var borrowing = await _borrowingService.GetByIdAsync(id);
-            if (borrowing == null)
-            {
-                return NotFound($"Borrowing with ID {id} not found.");
-            }
-            return Ok(borrowing);
-        }
-
-        // POST: api/borrowing
-        [HttpPost]
-        public async Task<IActionResult> Create([FromBody] CreateBorrowingDto request)
-        {
-            if (!ModelState.IsValid) return BadRequest(ModelState);
-
             try
             {
-                var result = await _borrowingService.ProcessBorrowingAsync(request);
-                return CreatedAtAction(nameof(GetById), new { id = result.Id }, result);
+                var borrowings = await _borrowingService.GetAsync();
+                return Ok(borrowings);
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error occurred while processing borrowing.");
-                return StatusCode(500, "An error occurred while processing your request.");
+                _logger.LogError(ex, "خطا در دریافت لیست تمام سوابق امانت");
+                return StatusCode(500, "خطای داخلی سرور در دریافت سوابق");
             }
         }
 
-        // DELETE: api/borrowing/5
+        // 2. دریافت یک رکورد امانت خاص بر اساس ID
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            try
+            {
+                var borrowing = await _borrowingService.GetByIdAsync(id);
+                if (borrowing == null)
+                    return NotFound($"رکورد امانت با شناسه {id} یافت نشد.");
+
+                return Ok(borrowing);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در دریافت رکورد امانت با شناسه {Id}", id);
+                return StatusCode(500, "خطای داخلی سرور");
+            }
+        }
+
+        // 3. ثبت یک امانت جدید (مثلاً وقتی کتابی داده می‌شود)
+        [HttpPost]
+        public async Task<IActionResult> Create([FromBody] BorrowingDto borrowingDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                await _borrowingService.AddAsync(borrowingDto);
+
+                // بازگشت وضعیت 201 و لینک به رکورد ساخته شده
+                return CreatedAtAction(nameof(GetById), new { id = borrowingDto.Id }, borrowingDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در ثبت عملیات امانت جدید");
+                return StatusCode(500, "خطای داخلی سرور در ثبت امانت");
+            }
+        }
+
+        // 4. به‌روزرسانی رکورد امانت (مثلاً تغییر تاریخ بازگشت یا وضعیت کتاب)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] BorrowingDto borrowingDto)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
+
+                if (id != borrowingDto.Id)
+                    return BadRequest("شناسه رکورد با اطلاعات ارسالی مطابقت ندارد.");
+
+                await _borrowingService.UpdateAsync(borrowingDto);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در به‌روزرسانی رکورد امانت با شناسه {Id}", id);
+                return StatusCode(500, "خطای داخلی سرور");
+            }
+        }
+
+        // 5. حذف یک رکورد امانت
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _borrowingService.DeleteAsync(id);
-            return NoContent();
+            try
+            {
+                await _borrowingService.DeleteAsync(id);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در حذف رکورد امانت با شناسه {Id}", id);
+                return StatusCode(500, "خطای داخلی سرور");
+            }
         }
     }
 }
