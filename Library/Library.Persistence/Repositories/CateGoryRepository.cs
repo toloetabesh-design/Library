@@ -1,16 +1,19 @@
-﻿using System;
+﻿using Library.Application.Interfaces;
+using Library.Domain.Entities;
+using Library.Domain.Interfaces;
+using Library.Persistence;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Library.Application.Interfaces;
-using Library.Domain.Entities;
-using Microsoft.EntityFrameworkCore;
 
-namespace Library.Persistence.Repositories
+namespace Library.Infrastructure.Repositories
 {
     public class CategoryRepository : ICategoryRepository
     {
+        // نام را از MyDbContext به AppDbContext تغییر دادیم
         private readonly AppDbContext _context;
 
         public CategoryRepository(AppDbContext context)
@@ -18,15 +21,14 @@ namespace Library.Persistence.Repositories
             _context = context;
         }
 
-        public async Task<IEnumerable<Category>> GetAsync()
+        public async Task<IEnumerable<Category>> GetAllAsync()
         {
             return await _context.Categories.ToListAsync();
         }
 
         public async Task<Category?> GetByIdAsync(int id)
         {
-            return await _context.Categories
-                .FirstOrDefaultAsync(x => x.Id == id);
+            return await _context.Categories.FindAsync(id);
         }
 
         public async Task AddAsync(Category category)
@@ -43,8 +45,7 @@ namespace Library.Persistence.Repositories
 
         public async Task DeleteAsync(int id)
         {
-            var category = await GetByIdAsync(id);
-
+            var category = await _context.Categories.FindAsync(id);
             if (category != null)
             {
                 _context.Categories.Remove(category);
@@ -53,3 +54,4 @@ namespace Library.Persistence.Repositories
         }
     }
 }
+
