@@ -1,90 +1,118 @@
 ﻿using Library.Application.DTOs;
 using Library.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace Library.Presentation.Controllers
-   
-
 {
-    // ۱. ساخت کلاس پایه
-    public abstract class BaseController : ControllerBase
-    {
-        protected readonly ILogger _logger;
-
-        protected BaseController(ILogger logger)
-        {
-            _logger = logger;
-        }
-    }
-
-    // ۲. استفاده در کنترلرها
-    public class CustomerController : BaseController
-    {
-        public CustomerController(ILogger<CustomerController> logger) : base(logger)
-        {
-        }
-
-        [HttpGet]
-        public IActionResult Get()
-        {
-            _logger.LogInformation("سلام از کنترلر مشتری!"); // مستقیم استفاده می‌شود
-            return Ok();
-        }
-    }
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/[controller]")] // مسیر این کنترلر می‌شود: api/book
     public class BookController : ControllerBase
     {
         private readonly IBookService _bookService;
+        private readonly ILogger<BookController> _logger;
 
-        public BookController(IBookService bookService)
+        // تزریق وابستگی (Dependency Injection) برای سرویس و لاگر
+        public BookController(IBookService bookService, ILogger<BookController> logger)
         {
             _bookService = bookService;
+            _logger = logger;
         }
 
+        // 1. دریافت تمام کتاب‌ها
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var books = await _bookService.GetAllAsync();
-
-            return Ok(books);
+            try
+            {
+                var books = await _bookService.GetAsync();
+                return Ok(books); // بازگشت وضعیت 200 OK به همراه لیست کتاب‌ها
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در دریافت لیست تمام کتاب‌ها");
+                return StatusCode(500, "خطای داخلی سرور در دریافت کتاب‌ها");
+            }
         }
 
+        // 2. دریافت یک کتاب خاص بر اساس ID
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var book = await _bookService.GetByIdAsync(id);
-
-            if (book == null)
+            try
             {
-                return NotFound();
+                var book = await _bookService.GetByIdAsync(id);
+                if (book == null)
+                    return NotFound($"کتابی با شناسه {id} یافت نشد.");
+
+                return Ok(book);
             }
-
-            return Ok(book);
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در دریافت کتاب با شناسه {Id}", id);
+                return StatusCode(500, "خطای داخلی سرور");
+            }
         }
 
+        // 3. ایجاد یک کتاب جدید
         [HttpPost]
-        public async Task<IActionResult> Add(BookDto bookDto)
+        public async Task<IActionResult> Create([FromBody] BookDto bookDto)
         {
-            
+            try
+            {
+                // بررسی اعتبار داده‌های ورودی (Validation)
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            return Ok(bookDto);
+                await _bookService.AddAsync(bookDto);
+
+                // بازگشت وضعیت 201 Created و لینک به متد GetById برای مشاهده کتاب ساخته شده
+                return CreatedAtAction(nameof(GetById), new { id = bookDto.Id }, bookDto);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در ایجاد کتاب جدید");
+                return StatusCode(500, "خطای داخلی سرور");
+            }
         }
 
-        [HttpPut]
-        public async Task<IActionResult> Update(BookDto bookDto)
+        // 4. به‌روزرسانی اطلاعات یک کتاب موجود
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Update(int id, [FromBody] BookDto bookDto)
         {
-            await _bookService.UpdateAsync(bookDto);
+            try
+            {
+                if (!ModelState.IsValid)
+                    return BadRequest(ModelState);
 
-            return Ok(bookDto);
+                // جلوگیری از به‌روزرسانی کتابی که ID آن با ID موجود در Body متفاوت است
+                if (id != bookDto.Id)
+                    return BadRequest("شناسه کتاب در مسیر و بدنه درخواست با هم مطابقت ندارند.");
+
+                await _bookService.UpdateAsync(bookDto);
+                return NoContent(); // بازگشت وضعیت 204 No Content (موفقیت‌آمیز بدون محتوای بازگشتی)
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در به‌روزرسانی کتاب با شناسه {Id}", id);
+                return StatusCode(500, "خطای داخلی سرور");
+            }
         }
 
+        // 5. حذف یک کتاب
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            await _bookService.DeleteAsync(id);
-
-            return Ok();
+            try
+            {
+                await _bookService.DeleteAsync(id);
+                return NoContent(); // بازگشت وضعیت 204
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "خطا در حذف کتاب با شناسه {Id}", id);
+                return StatusCode(500, "خطای داخلی سرور");
+            }
         }
     }
 }

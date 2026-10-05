@@ -10,14 +10,13 @@ namespace Library.Application.Interfaces
 {
     public interface IBookService
     {
-        Task<List<BookDto>> GetAllAsync();
+        // نام متد اینجا باید دقیقاً با کنترلر یکی باشد
+        Task<IEnumerable<BookDto>> GetAsync();
 
-        Task<BookDto> GetByIdAsync(int id);
-
+        Task<BookDto?> GetByIdAsync(int id);
         Task AddAsync(BookDto bookDto);
-
         Task UpdateAsync(BookDto bookDto);
-
         Task DeleteAsync(int id);
     }
 }
+
