@@ -6,13 +6,13 @@ using Microsoft.Extensions.Logging;
 namespace Library.Presentation.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] // مسیر این کنترلر می‌شود: api/book
+    [Route("api/[controller]")] 
     public class BookController : ControllerBase
     {
         private readonly IBookService _bookService;
         private readonly ILogger<BookController> _logger;
 
-        // تزریق وابستگی (Dependency Injection) برای سرویس و لاگر
+       
         public BookController(IBookService bookService, ILogger<BookController> logger)
         {
             _bookService = bookService;
