@@ -24,7 +24,7 @@ namespace Library.Application.Services
 
         public async Task<IEnumerable<MemberDto>> GetAsync()
         {
-            var members = await _memberRepository.GetAllAsync();
+            var members = await _memberRepository.GetAsync();
             return _mapper.Map<IEnumerable<MemberDto>>(members);
         }
 
