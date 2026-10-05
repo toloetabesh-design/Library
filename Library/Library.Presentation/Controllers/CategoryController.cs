@@ -30,7 +30,7 @@ namespace Library.Presentation.Controllers
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "خطا در دریافت لیست تمام دسته‌بندی‌ها");
+                _logger.LogError(ex, "");
                 return StatusCode(500, "خطای داخلی سرور در دریافت دسته‌بندی‌ها");
             }
         }
