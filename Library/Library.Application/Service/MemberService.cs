@@ -7,6 +7,7 @@ using AutoMapper;
 using Library.Application.DTOs;
 using Library.Application.Interfaces;
 using Library.Domain.Entities;
+using Library.Domain.Interfaces;
 
 namespace Library.Application.Services
 {
@@ -15,9 +16,7 @@ namespace Library.Application.Services
         private readonly IMemberRepository _memberRepository;
         private readonly IMapper _mapper;
 
-        public MemberService(
-            IMemberRepository memberRepository,
-            IMapper mapper)
+        public MemberService(IMemberRepository memberRepository, IMapper mapper)
         {
             _memberRepository = memberRepository;
             _mapper = mapper;
@@ -25,33 +24,30 @@ namespace Library.Application.Services
 
         public async Task<IEnumerable<MemberDto>> GetAsync()
         {
-            var members = await _memberRepository.GetAsync();
-
+            var members = await _memberRepository.GetAllAsync();
             return _mapper.Map<IEnumerable<MemberDto>>(members);
         }
 
         public async Task<MemberDto?> GetByIdAsync(int id)
         {
             var member = await _memberRepository.GetByIdAsync(id);
-
-            if (member == null)
-                return null;
-
-            return _mapper.Map<MemberDto>(member);
+            return member == null ? null : _mapper.Map<MemberDto>(member);
         }
 
         public async Task AddAsync(MemberDto memberDto)
         {
             var member = _mapper.Map<Member>(memberDto);
-
             await _memberRepository.AddAsync(member);
         }
 
         public async Task UpdateAsync(MemberDto memberDto)
         {
-            var member = _mapper.Map<Member>(memberDto);
+            var existingMember = await _memberRepository.GetByIdAsync(memberDto.Id);
+            if (existingMember == null)
+                throw new Exception("Member not found");
 
-            await _memberRepository.UpdateAsync(member);
+            _mapper.Map(memberDto, existingMember);
+            await _memberRepository.UpdateAsync(existingMember);
         }
 
         public async Task DeleteAsync(int id)
