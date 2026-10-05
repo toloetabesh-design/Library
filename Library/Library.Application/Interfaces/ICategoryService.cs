@@ -6,7 +6,7 @@ namespace Library.Application.Interfaces
     {
         Task<IEnumerable<CategoryDto>> GetAsync();
         Task<CategoryDto?> GetByIdAsync(int id);
-        Task AddAsync(CategoryDto categoryDto); 
+        Task AddAsync(CategoryDto categoryDto);
         Task UpdateAsync(CategoryDto categoryDto);
         Task DeleteAsync(int id);
     }

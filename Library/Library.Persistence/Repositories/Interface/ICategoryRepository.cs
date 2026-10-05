@@ -5,18 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using Library.Domain.Entities;
 
-namespace Library.Application.Interfaces
+namespace Library.Domain.Interfaces
 {
     public interface ICategoryRepository
     {
-        Task<IEnumerable<Category>> GetAsync();
+        // این خطی است که باعث خطا شده و باید حتماً اضافه شود
+        Task<IEnumerable<Category>> GetAllAsync();
 
         Task<Category?> GetByIdAsync(int id);
-
         Task AddAsync(Category category);
-
         Task UpdateAsync(Category category);
-
         Task DeleteAsync(int id);
     }
 }
