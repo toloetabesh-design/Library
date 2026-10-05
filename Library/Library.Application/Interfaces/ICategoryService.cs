@@ -2,12 +2,12 @@
 
 namespace Library.Application.Interfaces
 {
-    public interface ICategoryService
+    public interface IMemberService
     {
-        Task<IEnumerable<CategoryDto>> GetAsync();
-        Task<CategoryDto?> GetByIdAsync(int id);
-        Task AddAsync(CategoryDto categoryDto);
-        Task UpdateAsync(CategoryDto categoryDto);
+        Task<IEnumerable<MemberDto>> GetAsync();
+        Task<MemberDto?> GetByIdAsync(int id);
+        Task AddAsync(MemberDto memberDto);
+        Task UpdateAsync(MemberDto memberDto);
         Task DeleteAsync(int id);
     }
 }
