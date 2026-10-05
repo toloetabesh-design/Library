@@ -9,74 +9,67 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
 
-namespace Library.Application.Services;
-
-public class BookService : IBookService
+namespace Library.Application.Services
 {
-    private readonly IBookRepository _bookRepository;
-    private readonly IMapper _mapper;
-    private readonly ILogger<BookService> _logger;
-
-    public BookService(
-        IBookRepository bookRepository,
-        IMapper mapper,
-        ILogger<BookService> logger)
+    public class BookService : IBookService
     {
-        _bookRepository = bookRepository;
-        _mapper = mapper;
-        _logger = logger;
-    }
+        private readonly IBookRepository _bookRepository;
+        private readonly IMapper _mapper;
 
-    public async Task<List<BookDto>> GetAllAsync()
-    {
-        _logger.LogInformation("Getting all books");
+        public BookService(IBookRepository bookRepository, IMapper mapper)
+        {
+            _bookRepository = bookRepository;
+            _mapper = mapper;
+        }
 
-        var books = await _bookRepository.GetAllAsync();
+        // دریافت همه کتاب‌ها
+        public async Task<IEnumerable<BookDto>> GetAsync()
+        {
+            var books = await _bookRepository.GetAllAsync();
+            // تبدیل لیست Entity به لیست DTO
+            return _mapper.Map<IEnumerable<BookDto>>(books);
+        }
 
-        _logger.LogInformation("Books retrieved successfully");
+        // دریافت یک کتاب بر اساس ID
+        public async Task<BookDto?> GetByIdAsync(int id)
+        {
+            var book = await _bookRepository.GetByIdAsync(id);
+            if (book == null) return null;
 
-        return _mapper.Map<List<BookDto>>(books);
-    }
+            return _mapper.Map<BookDto>(book);
+        }
 
-    public async Task<BookDto> GetByIdAsync(int id)
-    {
-        _logger.LogInformation("Getting book with Id: {Id}", id);
+        // اضافه کردن کتاب جدید
+        public async Task AddAsync(BookDto bookDto)
+        {
+            
+            var book = _mapper.Map<Book>(bookDto);
 
-        var book = await _bookRepository.GetByIdAsync(id);
+            await _bookRepository.AddAsync(book);
+        }
 
-        return _mapper.Map<BookDto>(book);
-    }
+        // به‌روزرسانی کتاب
+        public async Task UpdateAsync(BookDto bookDto)
+        {
+            var existingBook = await _bookRepository.GetByIdAsync(bookDto.Id);
+            if (existingBook == null)
+                throw new Exception("کتاب یافت نشد.");
 
-    public async Task AddAsync(BookDto bookDto)
-    {
-        _logger.LogInformation("Adding a new book: {Title}", bookDto.Title);
+            // انتقال مقادیر از DTO به Entity موجود
+            _mapper.Map(bookDto, existingBook);
 
-        var book = _mapper.Map<Book>(bookDto);
+            await _bookRepository.UpdateAsync(existingBook);
+        }
 
-        await _bookRepository.AddAsync(book);
+        // حذف کتاب
+        public async Task DeleteAsync(int id)
+        {
+            var book = await _bookRepository.GetByIdAsync(id);
+            if (book == null)
+                throw new Exception("کتاب برای حذف یافت نشد.");
 
-        _logger.LogInformation("Book added successfully");
-    }
-
-    public async Task UpdateAsync(BookDto bookDto)
-    {
-        _logger.LogInformation("Updating book with Id: {Id}", bookDto.Id);
-
-        var book = _mapper.Map<Book>(bookDto);
-
-        await _bookRepository.UpdateAsync(book);
-
-        _logger.LogInformation("Book updated successfully");
-    }
-
-    public async Task DeleteAsync(int id)
-    {
-        _logger.LogInformation("Deleting book with Id: {Id}", id);
-
-        await _bookRepository.DeleteAsync(id);
-
-        _logger.LogInformation("Book deleted successfully");
+            await _bookRepository.DeleteAsync(id);
+        }
     }
 }
