@@ -1,7 +1,8 @@
 ﻿using AutoMapper;
 using Library.Application.DTOs;
 using Library.Application.Interfaces;
-using Library.Domain.Entities; // فرض بر اینکه Entity در این namespace است
+using Library.Domain.Interfaces;
+using Library.Domain.Entities;
 
 namespace Library.Application.Services
 {

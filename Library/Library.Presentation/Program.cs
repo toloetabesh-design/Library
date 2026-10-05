@@ -1,6 +1,8 @@
 ﻿using Library.Application.Interfaces;
 using Library.Application.Profiles;
 using Library.Application.Services;
+using Library.Domain.Interfaces;
+using Library.Infrastructure.Repositories;
 using Library.Persistence;
 using Library.Persistence.Interfaces;
 using Library.Persistence.Repositories;
