@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Library.Presentation.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")] // مسیر نهایی: api/category
+    [Route("api/[controller]")] 
     public class CategoryController : ControllerBase
     {
         private readonly ICategoryService _categoryService;
@@ -18,14 +18,14 @@ namespace Library.Presentation.Controllers
             _logger = logger;
         }
 
-        // 1. دریافت تمام دسته‌بندی‌ها
+        
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
             try
             {
                 var categories = await _categoryService.GetAsync();
-                _logger.LogInformation("لیست تمام دسته‌بندی‌ها با موفقیت دریافت شد.");
+                _logger.LogInformation("");
                 return Ok(categories);
             }
             catch (Exception ex)
