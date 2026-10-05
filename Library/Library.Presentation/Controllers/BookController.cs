@@ -19,7 +19,7 @@ namespace Library.Presentation.Controllers
             _logger = logger;
         }
 
-        // 1. دریافت تمام کتاب‌ها
+        
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
@@ -35,7 +35,7 @@ namespace Library.Presentation.Controllers
             }
         }
 
-        // 2. دریافت یک کتاب خاص بر اساس ID
+        
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
